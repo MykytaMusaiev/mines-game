@@ -1,30 +1,54 @@
 import { useGameStore } from '../../shared/store/gameStore';
 import { useBalance } from '../../shared/hooks/useBalance';
-import { useActiveGame } from '../../shared/hooks/useActiveGame';
 import { useCreateGame } from '../../shared/hooks/useCreateGame';
 import { useCashOut } from '../../shared/hooks/useCashOut';
-import type { MinesCount } from '../../shared/types';
-import styles from './ControlPanel.module.css';
 import { BetControls } from './BetControls/BetControls';
 import { MinesSelector } from './MinesSelector/MinesSelector';
+import type { MinesCount, GameStatus, RevealedCell } from '../../shared/types';
+import styles from './ControlPanel.module.css';
 
-export function ControlPanel() {
+interface ControlPanelProps {
+  gameStatus: GameStatus | null;
+  revealedCells: RevealedCell[];
+  currentMultiplier: number;
+  nextMultiplier: number;
+  onGameReset: () => void;
+  onGameStart: () => void;
+}
+
+export function ControlPanel({
+  gameStatus,
+  revealedCells,
+  currentMultiplier,
+  nextMultiplier,
+  onGameReset,
+  onGameStart,
+}: ControlPanelProps) {
   const { betAmount, minesCount, setBetAmount, setMinesCount } = useGameStore();
   const { data: balanceData } = useBalance();
-  const { data: activeGame } = useActiveGame();
   const createGame = useCreateGame();
   const cashOut = useCashOut();
 
   const balance = balanceData?.balance ?? 0;
-  const isActive = !!activeGame;
+  const isActive = gameStatus === 'active';
   const isLoading = createGame.isPending || cashOut.isPending;
 
+  const gemsFound = revealedCells.filter((c) => c.type === 'gem').length;
+  const totalGems = 25 - minesCount;
+  const profit = isActive ? betAmount * currentMultiplier - betAmount : 0;
+  const cashOutAmount = isActive ? betAmount * currentMultiplier : 0;
+
   const handleStart = () => {
-    createGame.mutate({ betAmount, minesCount });
+    createGame.mutate(
+      { betAmount, minesCount },
+      { onSuccess: () => onGameStart() }
+    );
   };
 
   const handleCashOut = () => {
-    cashOut.mutate();
+    cashOut.mutate(undefined, {
+      onSuccess: () => onGameReset(),
+    });
   };
 
   return (
@@ -47,25 +71,25 @@ export function ControlPanel() {
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Current Multiplier</span>
             <span className={styles.infoValueGreen}>
-              {activeGame.currentMultiplier.toFixed(2)}x
+              {currentMultiplier.toFixed(2)}x
             </span>
           </div>
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Profit</span>
             <span className={styles.infoValueGreen}>
-              +${(activeGame.currentMultiplier * betAmount - betAmount).toFixed(2)}
+              +${profit.toFixed(2)}
             </span>
           </div>
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Gems Found</span>
             <span className={styles.infoValue}>
-              {activeGame.gemsFound} / {25 - activeGame.minesCount}
+              {gemsFound} / {totalGems}
             </span>
           </div>
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Next Multiplier</span>
             <span className={styles.infoValue}>
-              {activeGame.nextMultiplier.toFixed(2)}x
+              {nextMultiplier.toFixed(2)}x
             </span>
           </div>
         </div>
@@ -80,7 +104,7 @@ export function ControlPanel() {
         {isLoading
           ? '...'
           : isActive
-            ? `CASH OUT — $${(activeGame.currentMultiplier * betAmount).toFixed(2)}`
+            ? `CASH OUT — $${cashOutAmount.toFixed(2)}`
             : 'START GAME'}
       </button>
 
