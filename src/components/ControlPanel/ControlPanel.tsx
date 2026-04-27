@@ -5,8 +5,8 @@ import { useCreateGame } from '../../shared/hooks/useCreateGame';
 import { useCashOut } from '../../shared/hooks/useCashOut';
 import type { MinesCount } from '../../shared/types';
 import styles from './ControlPanel.module.css';
-import { BetControls } from '../BetControls/BetControls';
-import { MinesSelector } from '../MinesSelector/MinesSelector';
+import { BetControls } from './BetControls/BetControls';
+import { MinesSelector } from './MinesSelector/MinesSelector';
 
 export function ControlPanel() {
   const { betAmount, minesCount, setBetAmount, setMinesCount } = useGameStore();

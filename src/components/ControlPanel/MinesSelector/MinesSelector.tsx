@@ -1,5 +1,5 @@
-import { MINES_OPTIONS } from '../../shared/constants/game';
-import type { MinesCount } from '../../shared/types';
+import { MINES_OPTIONS } from '../../../shared/constants/game';
+import type { MinesCount } from '../../../shared/types';
 import styles from './MinesSelector.module.css';
 
 interface MinesSelectorProps {

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { BET_MIN, BET_MAX, QUICK_BET_AMOUNTS } from '../../shared/constants/game';
+import { BET_MIN, BET_MAX, QUICK_BET_AMOUNTS } from '../../../shared/constants/game';
 import styles from './BetControls.module.css';
 
 interface BetControlsProps {
