@@ -10,7 +10,6 @@ import { ACTIVE_GAME_QUERY_KEY } from "./useActiveGame";
 export function useCashOut() {
     const queryClient = useQueryClient();
     const gameId = useGameStore((state) => state.gameId);
-    const setGameId = useGameStore((state) => state.setGameId);
 
     return useMutation({
         mutationFn: () => {
@@ -21,7 +20,6 @@ export function useCashOut() {
         },
 
         onSuccess: (data) => {
-            setGameId(null);
             toast.success(`You won $${data.winAmount.toFixed(2)}! 🎉`);
             queryClient.invalidateQueries({ queryKey: BALANCE_QUERY_KEY });
             queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });

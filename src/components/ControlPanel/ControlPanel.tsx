@@ -14,6 +14,7 @@ interface ControlPanelProps {
   nextMultiplier: number;
   onGameReset: () => void;
   onGameStart: () => void;
+  onCashOut: () => void;
 }
 
 export function ControlPanel({
@@ -23,6 +24,7 @@ export function ControlPanel({
   nextMultiplier,
   onGameReset,
   onGameStart,
+  onCashOut,
 }: ControlPanelProps) {
   const { betAmount, minesCount, setBetAmount, setMinesCount } = useGameStore();
   const { data: balanceData } = useBalance();
@@ -31,6 +33,7 @@ export function ControlPanel({
 
   const balance = balanceData?.balance ?? 0;
   const isActive = gameStatus === 'active';
+  const isEnded = gameStatus === 'won' || gameStatus === 'lost';
   const isLoading = createGame.isPending || cashOut.isPending;
 
   const gemsFound = revealedCells.filter((c) => c.type === 'gem').length;
@@ -43,12 +46,6 @@ export function ControlPanel({
       { betAmount, minesCount },
       { onSuccess: () => onGameStart() }
     );
-  };
-
-  const handleCashOut = () => {
-    cashOut.mutate(undefined, {
-      onSuccess: () => onGameReset(),
-    });
   };
 
   return (
@@ -97,7 +94,7 @@ export function ControlPanel({
 
       <button
         className={`${styles.mainBtn} ${isActive ? styles.cashOutBtn : styles.startBtn}`}
-        onClick={isActive ? handleCashOut : handleStart}
+        onClick={isActive ? onCashOut : isEnded ? onGameReset : handleStart}
         disabled={isLoading}
         type="button"
       >
@@ -105,7 +102,9 @@ export function ControlPanel({
           ? '...'
           : isActive
             ? `CASH OUT — $${cashOutAmount.toFixed(2)}`
-            : 'START GAME'}
+            : isEnded
+              ? 'NEW GAME'
+              : 'START GAME'}
       </button>
 
       <div className={styles.balance}>

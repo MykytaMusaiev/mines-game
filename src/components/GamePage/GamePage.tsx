@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useActiveGame } from '../../shared/hooks/useActiveGame';
 import { useRevealCell } from '../../shared/hooks/useRevealCell';
+import { useCashOut } from '../../shared/hooks/useCashOut';
 import { useGameStore } from '../../shared/store/gameStore';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
 import { GameGrid } from '../GameGrid/GameGrid';
@@ -14,7 +15,8 @@ import styles from './GamePage.module.css';
 export function GamePage() {
   const { data: activeGame, isLoading: isActiveGameLoading } = useActiveGame();
   const revealCell = useRevealCell();
-  const setGameId = useGameStore((state) => state.setGameId);
+  const cashOut = useCashOut();
+  const { setGameId } = useGameStore();
 
   const [revealedCells, setRevealedCells] = useState<RevealedCell[]>([]);
   const [fullBoard, setFullBoard] = useState<FullBoardCell[] | null>(null);
@@ -60,6 +62,17 @@ export function GamePage() {
     );
   };
 
+  const handleCashOut = () => {
+    cashOut.mutate(undefined, {
+      onSuccess: (data) => {
+        setGameId(null);
+        setFullBoard(data.fullBoard);
+        setGameStatus('won');
+        setIsGameStarted(true);
+      },
+    });
+  };
+
   const handleGameReset = () => {
     setIsGameStarted(false);
     setGameStatus(null);
@@ -98,6 +111,7 @@ export function GamePage() {
         nextMultiplier={restoredNextMultiplier}
         onGameReset={handleGameReset}
         onGameStart={handleGameStart}
+        onCashOut={handleCashOut}
       />
       <main className={styles.main}>
         <GameGrid
