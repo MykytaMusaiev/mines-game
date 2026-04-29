@@ -12,9 +12,16 @@ import { GameGrid } from '../GameGrid/GameGrid';
 import { GameResultModal } from '../GameResultModal/GameResultModal';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { RecentGames } from '../RecentGames/RecentGames';
-import type { RevealedCell, FullBoard, GameStatus, ModalResult } from '../../shared/types';
+import type { RevealedCell, FullBoard, GameStatus } from '../../shared/types';
 import styles from './GamePage.module.css';
 
+interface ModalResult {
+  type: 'win' | 'lose';
+  multiplier?: number;
+  winAmount?: number;
+  profit?: number;
+  lostAmount?: number;
+}
 
 export function GamePage() {
   const queryClient = useQueryClient();
@@ -39,7 +46,24 @@ export function GamePage() {
   const restoredMultiplier = !isGameStarted && activeGame ? activeGame.currentMultiplier : currentMultiplier;
   const restoredNextMultiplier = !isGameStarted && activeGame ? activeGame.nextMultiplier : nextMultiplier;
 
-  const { betAmount } = useGameStore();
+  const { betAmount, minesCount } = useGameStore();
+
+  const handleGameStart = () => {
+    createGame.mutate(
+      { betAmount, minesCount },
+      {
+        onSuccess: () => {
+          setIsGameStarted(true);
+          setGameStatus('active');
+          setRevealedCells([]);
+          setFullBoard(null);
+          setHitCell(null);
+          setCurrentMultiplier(1);
+          setNextMultiplier(1);
+        },
+      }
+    );
+  };
 
   const handleCellClick = (row: number, col: number) => {
     if (isRevealing) return;
@@ -107,16 +131,6 @@ export function GamePage() {
     queryClient.setQueryData(ACTIVE_GAME_QUERY_KEY, null);
   };
 
-  const handleGameStart = () => {
-    setIsGameStarted(true);
-    setGameStatus('active');
-    setRevealedCells([]);
-    setFullBoard(null);
-    setHitCell(null);
-    setCurrentMultiplier(1);
-    setNextMultiplier(1);
-  };
-
   return (
     <div className={styles.page}>
       <ControlPanel
@@ -124,6 +138,7 @@ export function GamePage() {
         revealedCells={restoredCells}
         currentMultiplier={restoredMultiplier}
         nextMultiplier={restoredNextMultiplier}
+        isStarting={createGame.isPending}
         onGameReset={handleGameReset}
         onGameStart={handleGameStart}
         onCashOut={handleCashOut}

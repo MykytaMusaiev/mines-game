@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../shared/store/gameStore';
 import { useBalance } from '../../shared/hooks/useBalance';
-import { useCreateGame } from '../../shared/hooks/useCreateGame';
 import { useCashOut } from '../../shared/hooks/useCashOut';
 import { BetControls } from './BetControls/BetControls';
 import { MinesSelector } from './MinesSelector/MinesSelector';
@@ -13,6 +12,7 @@ interface ControlPanelProps {
   revealedCells: RevealedCell[];
   currentMultiplier: number;
   nextMultiplier: number;
+  isStarting: boolean;
   onGameReset: () => void;
   onGameStart: () => void;
   onCashOut: () => void;
@@ -23,33 +23,23 @@ export function ControlPanel({
   revealedCells,
   currentMultiplier,
   nextMultiplier,
+  isStarting,
   onGameStart,
   onCashOut,
 }: ControlPanelProps) {
   const { betAmount, minesCount, setBetAmount, setMinesCount } = useGameStore();
   const { data: balanceData } = useBalance();
-  const createGame = useCreateGame();
   const cashOut = useCashOut();
 
   const balance = balanceData?.balance ?? 0;
   const isActive = gameStatus === 'active';
-  const isLoading = createGame.isPending || cashOut.isPending;
+  const isLoading = isStarting || cashOut.isPending;
 
   const gemsFound = revealedCells.filter((c) => c.type === 'gem').length;
   const isCashOutDisabled = isLoading || gemsFound === 0;
   const totalGems = 25 - minesCount;
   const profit = isActive ? betAmount * currentMultiplier - betAmount : 0;
   const cashOutAmount = isActive ? betAmount * currentMultiplier : 0;
-
-
-
-
-  const handleStart = () => {
-    createGame.mutate(
-      { betAmount, minesCount },
-      { onSuccess: () => onGameStart() }
-    );
-  };
 
   return (
     <aside className={styles.panel}>
@@ -105,7 +95,7 @@ export function ControlPanel({
 
       <motion.button
         className={`${styles.mainBtn} ${isActive ? styles.cashOutBtn : styles.startBtn}`}
-        onClick={isActive ? onCashOut : handleStart}
+        onClick={isActive ? onCashOut : onGameStart}
         disabled={isActive ? isCashOutDisabled : isLoading}
         type="button"
         animate={isActive && gemsFound > 0 ? { scale: [1, 1.02, 1] } : { scale: 1 }}

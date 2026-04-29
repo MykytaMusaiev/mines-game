@@ -12,9 +12,12 @@ const dots = [
 ];
 
 export function LoadingOverlay({ type }: LoadingOverlayProps) {
+  const overlayClass = `${styles.overlay} ${type === 'app' ? styles.overlayApp : styles.overlayStarting
+    }`;
+
   return (
     <motion.div
-      className={styles.overlay}
+      className={overlayClass}
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
