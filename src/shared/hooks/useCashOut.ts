@@ -19,12 +19,16 @@ export function useCashOut() {
             );
         },
 
-        onSuccess: (data) => {
-            toast.success(`You won $${data.winAmount.toFixed(2)}! 🎉`);
-            queryClient.invalidateQueries({ queryKey: BALANCE_QUERY_KEY });
-            queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
-            queryClient.invalidateQueries({ queryKey: ACTIVE_GAME_QUERY_KEY });
-        },
+        onSuccess: () =>
+            // data
+            {
+                // toast.success(`You won $${data.winAmount.toFixed(2)}! 🎉`);
+                queryClient.invalidateQueries({ queryKey: BALANCE_QUERY_KEY });
+                queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
+                queryClient.invalidateQueries({
+                    queryKey: ACTIVE_GAME_QUERY_KEY,
+                });
+            },
 
         onError: () => {
             toast.error("Failed to cash out. Please try again.");

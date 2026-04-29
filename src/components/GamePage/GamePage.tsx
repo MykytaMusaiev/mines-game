@@ -4,32 +4,24 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useActiveGame, ACTIVE_GAME_QUERY_KEY } from '../../shared/hooks/useActiveGame';
 import { useRevealCell } from '../../shared/hooks/useRevealCell';
 import { useCashOut } from '../../shared/hooks/useCashOut';
+import { useCreateGame } from '../../shared/hooks/useCreateGame';
 import { useGameStore } from '../../shared/store/gameStore';
 import { HISTORY_QUERY_KEY } from '../../shared/hooks/useHistory';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
 import { GameGrid } from '../GameGrid/GameGrid';
 import { GameResultModal } from '../GameResultModal/GameResultModal';
+import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { RecentGames } from '../RecentGames/RecentGames';
-import type {
-  RevealedCell,
-  FullBoard,
-  GameStatus,
-} from '../../shared/types';
+import type { RevealedCell, FullBoard, GameStatus, ModalResult } from '../../shared/types';
 import styles from './GamePage.module.css';
 
-interface ModalResult {
-  type: 'win' | 'lose';
-  multiplier?: number;
-  winAmount?: number;
-  profit?: number;
-  lostAmount?: number;
-}
 
 export function GamePage() {
   const queryClient = useQueryClient();
-  const { data: activeGame, isLoading: isActiveGameLoading } = useActiveGame();
+  const { data: activeGame } = useActiveGame();
   const revealCell = useRevealCell();
   const cashOut = useCashOut();
+  const createGame = useCreateGame();
 
   const [revealedCells, setRevealedCells] = useState<RevealedCell[]>([]);
   const [fullBoard, setFullBoard] = useState<FullBoard | null>(null);
@@ -51,46 +43,35 @@ export function GamePage() {
 
   const handleCellClick = (row: number, col: number) => {
     if (isRevealing) return;
-
     if (activeGame && !isGameStarted) {
       useGameStore.getState().setGameId(activeGame.gameId);
     }
-
     setIsGameStarted(true);
     setIsRevealing(true);
     setLoadingCell({ row, col });
-
-    revealCell.mutate(
-      { row, col },
-      {
-        onSuccess: (data) => {
-          setIsRevealing(false);
-          setLoadingCell(null);
-          setGameStatus(data.status);
-
-          if (data.result === 'gem' && data.revealedCells) {
-            setRevealedCells(data.revealedCells);
-            setCurrentMultiplier(data.currentMultiplier ?? 1);
-            setNextMultiplier(data.nextMultiplier ?? 1);
-          }
-
-          if (data.result === 'mine') {
-            setHitCell({ row, col });
-            setFullBoard(data.fullBoard ?? null);
-            setModalResult({
-              type: 'lose',
-              lostAmount: betAmount,
-            });
-            queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
-          }
-        },
-        onError: () => {
-          setIsRevealing(false);
-          setLoadingCell(null);
-          setIsGameStarted(false);
-        },
-      }
-    );
+    revealCell.mutate({ row, col }, {
+      onSuccess: (data) => {
+        setIsRevealing(false);
+        setLoadingCell(null);
+        setGameStatus(data.status);
+        if (data.result === 'gem' && data.revealedCells) {
+          setRevealedCells(data.revealedCells);
+          setCurrentMultiplier(data.currentMultiplier ?? 1);
+          setNextMultiplier(data.nextMultiplier ?? 1);
+        }
+        if (data.result === 'mine') {
+          setHitCell({ row, col });
+          setFullBoard(data.fullBoard ?? null);
+          setModalResult({ type: 'lose', lostAmount: betAmount });
+          queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
+        }
+      },
+      onError: () => {
+        setIsRevealing(false);
+        setLoadingCell(null);
+        setIsGameStarted(false);
+      },
+    });
   };
 
   const handleCashOut = () => {
@@ -136,14 +117,6 @@ export function GamePage() {
     setNextMultiplier(1);
   };
 
-  if (isActiveGameLoading) {
-    return (
-      <div className={styles.loadingScreen}>
-        <span className={styles.spinner} />
-      </div>
-    );
-  }
-
   return (
     <div className={styles.page}>
       <ControlPanel
@@ -169,6 +142,12 @@ export function GamePage() {
       <div className={styles.recentGames}>
         <RecentGames />
       </div>
+
+      <AnimatePresence>
+        {createGame.isPending && (
+          <LoadingOverlay type="starting" key="starting-loader" />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {modalResult && (
