@@ -1,5 +1,3 @@
-// ─── Cell ───────────────────────────────────────────────────────────────────
-
 export type CellType = "gem" | "mine";
 
 export type CellState = "inactive" | "hidden" | "gem" | "mine" | "mine-hit";
@@ -9,8 +7,6 @@ export interface RevealedCell {
     col: number;
     type: CellType;
 }
-
-// ─── Game ────────────────────────────────────────────────────────────────────
 
 export type GameStatus = "active" | "won" | "lost";
 
@@ -27,13 +23,7 @@ export interface Game {
     nextMultiplier: number;
 }
 
-export interface FullBoardCell {
-    row: number;
-    col: number;
-    type: CellType;
-}
-
-// ─── API Requests ────────────────────────────────────────────────────────────
+export type FullBoard = CellType[][];
 
 export interface CreateGameRequest {
     betAmount: number;
@@ -44,8 +34,6 @@ export interface RevealCellRequest {
     row: number;
     col: number;
 }
-
-// ─── API Responses ───────────────────────────────────────────────────────────
 
 export interface BalanceResponse {
     balance: number;
@@ -58,13 +46,25 @@ export interface CreateGameResponse {
     status: GameStatus;
 }
 
+export interface GameCellProps {
+    row: number;
+    col: number;
+    state: CellState;
+    isLoading: boolean;
+    onClick: (row: number, col: number) => void;
+    isDisabled: boolean;
+}
+
 export interface RevealCellResponse {
+    result: CellType;
     status: GameStatus;
-    type: CellType;
-    currentMultiplier: number;
-    nextMultiplier: number;
-    gemsFound: number;
-    fullBoard: FullBoardCell[] | null;
+    revealedCells?: RevealedCell[];
+    currentMultiplier?: number;
+    nextMultiplier?: number;
+    gemsFound?: number;
+    revealedCell?: RevealedCell;
+    fullBoard?: FullBoard;
+    balance?: number;
 }
 
 export interface CashOutResponse {
@@ -72,7 +72,7 @@ export interface CashOutResponse {
     cashedOutMultiplier: number;
     winAmount: number;
     profit: number;
-    fullBoard: FullBoardCell[];
+    fullBoard: FullBoard;
     balance: number;
 }
 
@@ -93,9 +93,24 @@ export interface HistoryResponse {
 
 export type ActiveGameResponse = Game;
 
-// ─── API Error ───────────────────────────────────────────────────────────────
-
 export interface ApiError {
     message: string;
     statusCode: number;
+}
+
+export interface GameResultModalProps {
+    type: "win" | "lose";
+    multiplier?: number;
+    winAmount?: number;
+    profit?: number;
+    lostAmount?: number;
+    onClose: () => void;
+}
+
+export interface ModalResult {
+    type: "win" | "lose";
+    multiplier?: number;
+    winAmount?: number;
+    profit?: number;
+    lostAmount?: number;
 }

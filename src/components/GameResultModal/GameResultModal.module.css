@@ -1,0 +1,114 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(2px);
+}
+
+.card {
+    background: var(--color-panel-bg);
+    border-radius: 16px;
+    padding: 36px 40px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 280px;
+    max-width: 340px;
+    width: 90%;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.cardWin {
+    border-color: var(--color-green);
+    box-shadow:
+        0 0 32px rgba(76, 175, 80, 0.25),
+        0 0 64px rgba(76, 175, 80, 0.1);
+}
+
+.cardLose {
+    border-color: var(--color-red);
+    box-shadow:
+        0 0 32px rgba(244, 67, 54, 0.25),
+        0 0 64px rgba(244, 67, 54, 0.1);
+}
+
+.icon {
+    font-size: 48px;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.titleWin {
+    color: var(--color-text-primary);
+}
+
+.titleLose {
+    color: var(--color-text-primary);
+}
+
+.multiplier {
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--color-accent-blue);
+    line-height: 1.1;
+    margin-top: 4px;
+}
+
+.amount {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.profit {
+    font-size: 14px;
+    color: var(--color-green);
+    font-weight: 500;
+}
+
+.lost {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+}
+
+.lostAmount {
+    color: var(--color-red);
+    font-weight: 700;
+}
+
+.btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.btnWin {
+    background: var(--color-green);
+    color: #fff;
+}
+
+.btnLose {
+    background: var(--color-red);
+    color: #fff;
+}

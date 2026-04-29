@@ -8,11 +8,10 @@ import { HISTORY_QUERY_KEY } from "./useHistory";
 
 export function useRevealCell() {
     const queryClient = useQueryClient();
-    const gameId = useGameStore((state) => state.gameId);
-    const setGameId = useGameStore((state) => state.setGameId);
 
     return useMutation({
         mutationFn: (body: RevealCellRequest) => {
+            const gameId = useGameStore.getState().gameId;
             if (!gameId) throw new Error("No active game");
             return apiClient.post<RevealCellResponse>(
                 `/api/games/${gameId}/reveal`,
@@ -22,7 +21,7 @@ export function useRevealCell() {
 
         onSuccess: (data) => {
             if (data.status === "lost") {
-                setGameId(null);
+                useGameStore.getState().setGameId(null);
                 queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
                 queryClient.invalidateQueries({ queryKey: BALANCE_QUERY_KEY });
             }

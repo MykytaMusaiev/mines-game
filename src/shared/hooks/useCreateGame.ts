@@ -8,14 +8,13 @@ import { ACTIVE_GAME_QUERY_KEY } from "./useActiveGame";
 
 export function useCreateGame() {
     const queryClient = useQueryClient();
-    const setGameId = useGameStore((state) => state.setGameId);
 
     return useMutation({
         mutationFn: (body: CreateGameRequest) =>
             apiClient.post<CreateGameResponse>("/api/games", body),
 
         onSuccess: (data) => {
-            setGameId(data.gameId);
+            useGameStore.getState().setGameId(data.gameId);
             queryClient.invalidateQueries({ queryKey: BALANCE_QUERY_KEY });
             queryClient.invalidateQueries({ queryKey: ACTIVE_GAME_QUERY_KEY });
         },

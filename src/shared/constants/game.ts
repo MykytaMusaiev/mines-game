@@ -15,3 +15,9 @@ export const API_TIMEOUT_MS = 10_000;
 export const QUICK_BET_AMOUNTS = [
     10, 25, 50, 100, 250, 500, 1000, 2500,
 ] as const;
+
+export const CELL_ICONS = {
+    gem: { src: "/images/diamond.png", alt: "gem" },
+    mine: { src: "/images/bomb.png", alt: "mine" },
+    "mine-hit": { src: "/images/bomb.png", alt: "mine" },
+} as const;

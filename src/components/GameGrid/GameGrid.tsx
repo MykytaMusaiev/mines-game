@@ -1,16 +1,18 @@
 import { useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { GameCell } from './GameCell/GameCell';
 import { GRID_SIZE } from '../../shared/constants/game';
-import type { CellState, RevealedCell, FullBoardCell, GameStatus } from '../../shared/types';
+import type { CellState, RevealedCell, FullBoard, GameStatus } from '../../shared/types';
 import styles from './GameGrid.module.css';
 
 interface GameGridProps {
   status: GameStatus | null;
   revealedCells: RevealedCell[];
-  fullBoard: FullBoardCell[] | null;
+  fullBoard: FullBoard | null;
   hitCell: { row: number; col: number } | null;
   loadingCell: { row: number; col: number } | null;
   onCellClick: (row: number, col: number) => void;
+  isRevealing: boolean;
 }
 
 function getCellState(
@@ -18,30 +20,36 @@ function getCellState(
   col: number,
   status: GameStatus | null,
   revealedCells: RevealedCell[],
-  fullBoard: FullBoardCell[] | null,
+  fullBoard: FullBoard | null,
   hitCell: { row: number; col: number } | null
 ): CellState {
-  // Гра не почата
   if (!status) return 'inactive';
 
-  // Гра завершена — показуємо fullBoard
   if ((status === 'lost' || status === 'won') && fullBoard) {
-    const boardCell = fullBoard.find((c) => c.row === row && c.col === col);
-    if (!boardCell) return 'inactive';
-
-    if (boardCell.type === 'gem') return 'gem';
-
-    // Міна — перевіряємо чи це та що вбила
+    const cellType = fullBoard[row]?.[col];
+    if (!cellType) return 'inactive';
+    if (cellType === 'gem') return 'gem';
     if (hitCell && hitCell.row === row && hitCell.col === col) return 'mine-hit';
     return 'mine';
   }
 
-  // Активна гра — шукаємо в revealedCells
   const revealed = revealedCells.find((c) => c.row === row && c.col === col);
   if (revealed) return revealed.type === 'gem' ? 'gem' : 'mine-hit';
 
   return 'hidden';
 }
+
+const gridVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.03 },
+  },
+};
+
+const cellWrapperVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
+};
 
 export function GameGrid({
   status,
@@ -49,6 +57,7 @@ export function GameGrid({
   fullBoard,
   hitCell,
   loadingCell,
+  isRevealing,
   onCellClick,
 }: GameGridProps) {
   const cells = useMemo(() => {
@@ -61,24 +70,35 @@ export function GameGrid({
     return result;
   }, []);
 
+  const isEnded = status === 'lost' || status === 'won';
+
   return (
-    <div className={styles.grid}>
+    <motion.div
+      className={styles.grid}
+      variants={gridVariants}
+      animate={isEnded && fullBoard ? 'visible' : 'hidden'}
+      initial="hidden"
+    >
       {cells.map(({ row, col }) => {
         const cellState = getCellState(row, col, status, revealedCells, fullBoard, hitCell);
-        const isLoading =
-          !!loadingCell && loadingCell.row === row && loadingCell.col === col;
+        const isLoading = !!loadingCell && loadingCell.row === row && loadingCell.col === col;
 
         return (
-          <GameCell
+          <motion.div
             key={`${row}-${col}`}
-            row={row}
-            col={col}
-            state={cellState}
-            isLoading={isLoading}
-            onClick={onCellClick}
-          />
+            variants={isEnded && fullBoard ? cellWrapperVariants : undefined}
+          >
+            <GameCell
+              row={row}
+              col={col}
+              state={cellState}
+              isLoading={isLoading}
+              onClick={onCellClick}
+              isDisabled={isRevealing && !isLoading}
+            />
+          </motion.div>
         );
       })}
-    </div>
+    </motion.div>
   );
 }

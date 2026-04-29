@@ -9,10 +9,10 @@ import { ACTIVE_GAME_QUERY_KEY } from "./useActiveGame";
 
 export function useCashOut() {
     const queryClient = useQueryClient();
-    const gameId = useGameStore((state) => state.gameId);
 
     return useMutation({
         mutationFn: () => {
+            const gameId = useGameStore.getState().gameId;
             if (!gameId) throw new Error("No active game");
             return apiClient.post<CashOutResponse>(
                 `/api/games/${gameId}/cashout`,

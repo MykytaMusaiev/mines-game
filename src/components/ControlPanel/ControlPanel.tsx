@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../shared/store/gameStore';
 import { useBalance } from '../../shared/hooks/useBalance';
 import { useCreateGame } from '../../shared/hooks/useCreateGame';
@@ -22,7 +23,6 @@ export function ControlPanel({
   revealedCells,
   currentMultiplier,
   nextMultiplier,
-  onGameReset,
   onGameStart,
   onCashOut,
 }: ControlPanelProps) {
@@ -33,13 +33,16 @@ export function ControlPanel({
 
   const balance = balanceData?.balance ?? 0;
   const isActive = gameStatus === 'active';
-  const isEnded = gameStatus === 'won' || gameStatus === 'lost';
   const isLoading = createGame.isPending || cashOut.isPending;
 
   const gemsFound = revealedCells.filter((c) => c.type === 'gem').length;
+  const isCashOutDisabled = isLoading || gemsFound === 0;
   const totalGems = 25 - minesCount;
   const profit = isActive ? betAmount * currentMultiplier - betAmount : 0;
   const cashOutAmount = isActive ? betAmount * currentMultiplier : 0;
+
+
+
 
   const handleStart = () => {
     createGame.mutate(
@@ -63,53 +66,71 @@ export function ControlPanel({
         disabled={isActive || isLoading}
       />
 
-      {isActive && (
-        <div className={styles.gameInfo}>
-          <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>Current Multiplier</span>
-            <span className={styles.infoValueGreen}>
-              {currentMultiplier.toFixed(2)}x
-            </span>
-          </div>
-          <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>Profit</span>
-            <span className={styles.infoValueGreen}>
-              +${profit.toFixed(2)}
-            </span>
-          </div>
-          <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>Gems Found</span>
-            <span className={styles.infoValue}>
-              {gemsFound} / {totalGems}
-            </span>
-          </div>
-          <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>Next Multiplier</span>
-            <span className={styles.infoValue}>
-              {nextMultiplier.toFixed(2)}x
-            </span>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {isActive && (
+          <motion.div
+            className={styles.gameInfo}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Current Multiplier</span>
+              <span className={styles.infoValueGreen}>
+                {currentMultiplier.toFixed(2)}x
+              </span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Profit</span>
+              <span className={styles.infoValueGreen}>
+                +${profit.toFixed(2)}
+              </span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Gems Found</span>
+              <span className={styles.infoValue}>
+                {gemsFound} / {totalGems}
+              </span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Next Multiplier</span>
+              <span className={styles.infoValue}>
+                {nextMultiplier.toFixed(2)}x
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <button
+      <motion.button
         className={`${styles.mainBtn} ${isActive ? styles.cashOutBtn : styles.startBtn}`}
-        onClick={isActive ? onCashOut : isEnded ? onGameReset : handleStart}
-        disabled={isLoading}
+        onClick={isActive ? onCashOut : handleStart}
+        disabled={isActive ? isCashOutDisabled : isLoading}
         type="button"
+        animate={isActive && gemsFound > 0 ? { scale: [1, 1.02, 1] } : { scale: 1 }}
+        transition={isActive && gemsFound > 0 ? { duration: 1.5, repeat: Infinity, ease: 'easeInOut' } : {}}
+        whileHover={{ opacity: 0.9 }}
+        whileTap={{ scale: 0.97 }}
       >
         {isLoading
           ? '...'
           : isActive
             ? `CASH OUT — $${cashOutAmount.toFixed(2)}`
-            : isEnded
-              ? 'NEW GAME'
-              : 'START GAME'}
-      </button>
+            : 'START GAME'}
+      </motion.button>
 
       <div className={styles.balance}>
         <span className={styles.balanceIcon}>💰</span>
-        <span className={styles.balanceValue}>${balance.toFixed(2)}</span>
+        <motion.span
+          className={styles.balanceValue}
+          key={balance}
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          ${balance.toFixed(2)}
+        </motion.span>
       </div>
     </aside>
   );

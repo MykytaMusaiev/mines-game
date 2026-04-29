@@ -1,52 +1,60 @@
-import { motion } from 'framer-motion';
-import type { CellState } from '../../../shared/types';
+import { motion, type Variants } from 'framer-motion';
 import styles from './GameCell.module.css';
+import { CELL_ICONS } from '../../../shared/constants/game';
+import type { GameCellProps } from '../../../shared/types';
 
-interface GameCellProps {
-  row: number;
-  col: number;
-  state: CellState;
-  isLoading: boolean;
-  onClick: (row: number, col: number) => void;
-}
+const shakeVariants: Variants = {
+  idle: { x: 0 },
+  shake: {
+    x: [0, -8, 8, -6, 6, -4, 4, 0],
+    transition: {
+      duration: 0.4,
+      type: 'keyframes',
+      ease: 'easeInOut',
+    },
+  },
+};
 
-export function GameCell({ row, col, state, isLoading, onClick }: GameCellProps) {
-  const isClickable = state === 'hidden' && !isLoading;
+const iconVariants: Variants = {
+  hidden: { scale: 0, rotate: -20, opacity: 0 },
+  visible: {
+    scale: 1,
+    rotate: 0,
+    opacity: 1,
+    transition: { type: 'spring', stiffness: 300, damping: 18 },
+  },
+};
 
-  const handleClick = () => {
-    if (isClickable) onClick(row, col);
-  };
+
+
+
+
+export function GameCell({ row, col, state, isLoading, isDisabled, onClick }: GameCellProps) {
+  const isClickable = state === 'hidden' && !isLoading && !isDisabled;
+
+  const icon = CELL_ICONS[state as keyof typeof CELL_ICONS];
 
   return (
     <motion.button
       type="button"
       className={`${styles.cell} ${styles[state]}`}
-      onClick={handleClick}
+      onClick={() => isClickable && onClick(row, col)}
       disabled={!isClickable}
-      whileHover={isClickable ? { scale: 1.05 } : {}}
-      whileTap={isClickable ? { scale: 0.95 } : {}}
-      animate={state === 'mine-hit' ? { scale: [1, 1.15, 1] } : {}}
-      transition={{ duration: 0.2 }}
+      variants={shakeVariants}
+      animate={state === 'mine-hit' ? 'shake' : 'idle'}
+      whileHover={isClickable ? { scale: 1.06, transition: { duration: 0.1 } } : {}}
+      whileTap={isClickable ? { scale: 0.94 } : {}}
     >
-      {isLoading && state === 'hidden' ? (
+      {isLoading ? (
         <span className={styles.spinner} />
-      ) : (state === 'gem') ? (
+      ) : (state === 'gem' || state === 'mine' || state === 'mine-hit') ? (
         <motion.img
-          src="/images/diamond.svg"
-          alt="gem"
+          src={icon.src}
+          alt={icon.alt}
           className={styles.icon}
-          initial={{ scale: 0, rotate: -15 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        />
-      ) : (state === 'mine' || state === 'mine-hit') ? (
-        <motion.img
-          src="/images/bomb.svg"
-          alt="mine"
-          className={styles.icon}
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          variants={iconVariants}
+          initial="hidden"
+          animate="visible"
         />
       ) : null}
     </motion.button>
