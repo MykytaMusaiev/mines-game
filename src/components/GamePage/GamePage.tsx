@@ -5,18 +5,25 @@ import { useActiveGame, ACTIVE_GAME_QUERY_KEY } from '../../shared/hooks/useActi
 import { useRevealCell } from '../../shared/hooks/useRevealCell';
 import { useCashOut } from '../../shared/hooks/useCashOut';
 import { useGameStore } from '../../shared/store/gameStore';
+import { HISTORY_QUERY_KEY } from '../../shared/hooks/useHistory';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
 import { GameGrid } from '../GameGrid/GameGrid';
 import { GameResultModal } from '../GameResultModal/GameResultModal';
+import { RecentGames } from '../RecentGames/RecentGames';
 import type {
   RevealedCell,
   FullBoard,
   GameStatus,
-  ModalResult,
 } from '../../shared/types';
 import styles from './GamePage.module.css';
 
-
+interface ModalResult {
+  type: 'win' | 'lose';
+  multiplier?: number;
+  winAmount?: number;
+  profit?: number;
+  lostAmount?: number;
+}
 
 export function GamePage() {
   const queryClient = useQueryClient();
@@ -74,6 +81,7 @@ export function GamePage() {
               type: 'lose',
               lostAmount: betAmount,
             });
+            queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
           }
         },
         onError: () => {
@@ -98,6 +106,7 @@ export function GamePage() {
           winAmount: data.winAmount,
           profit: data.profit,
         });
+        queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
       },
     });
   };
@@ -157,9 +166,9 @@ export function GamePage() {
           isRevealing={isRevealing}
         />
       </main>
-      <aside className={styles.recentGamesPlaceholder}>
-        <span className={styles.placeholderLabel}>RECENT GAMES</span>
-      </aside>
+      <div className={styles.recentGames}>
+        <RecentGames />
+      </div>
 
       <AnimatePresence>
         {modalResult && (

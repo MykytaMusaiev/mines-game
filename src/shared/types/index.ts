@@ -114,3 +114,18 @@ export interface ModalResult {
     profit?: number;
     lostAmount?: number;
 }
+
+export interface HistoryGame {
+    gameId: string;
+    betAmount: number;
+    minesCount: number;
+    status: GameStatus;
+    multiplier: number;
+    profit: number;
+    gemsFound: number;
+    createdAt: string;
+}
+
+export interface HistoryResponse {
+    games: HistoryGame[];
+}
