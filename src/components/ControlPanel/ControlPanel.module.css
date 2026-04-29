@@ -91,3 +91,15 @@
     font-weight: 700;
     color: var(--color-yellow);
 }
+
+@media (max-width: 768px) {
+    .panel {
+        width: 100%;
+        min-width: unset;
+        order: 2;
+    }
+
+    .balance {
+        justify-content: flex-end;
+    }
+}

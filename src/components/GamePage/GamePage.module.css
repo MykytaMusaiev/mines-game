@@ -59,12 +59,13 @@
     .page {
         flex-direction: column;
         padding: 16px;
-        gap: 16px;
+        gap: 12px;
     }
 
     .main {
         min-height: unset;
         width: 100%;
+        order: 3;
     }
 
     .recentGames {
@@ -76,5 +77,6 @@
         background: transparent;
         padding: 0;
         border-radius: 0;
+        order: 1;
     }
 }
