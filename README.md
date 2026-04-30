@@ -48,7 +48,7 @@ Mines is a provably-fair style grid game where the player selects a bet amount a
 ### Installation
 
 ```bash
-git clone https://github.com/your-org/mines-game.git
+git clone https://github.com/MykytaMusaiev/mines-game.git
 cd mines-game
 npm install
 ```
