@@ -53,6 +53,7 @@ export interface GameCellProps {
     isLoading: boolean;
     onClick: (row: number, col: number) => void;
     isDisabled: boolean;
+    onHover?: () => void;
 }
 
 export interface RevealCellResponse {

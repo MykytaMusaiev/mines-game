@@ -25,11 +25,7 @@ const iconVariants: Variants = {
   },
 };
 
-
-
-
-
-export function GameCell({ row, col, state, isLoading, isDisabled, onClick }: GameCellProps) {
+export function GameCell({ row, col, state, isLoading, isDisabled, onClick, onHover }: GameCellProps) {
   const isClickable = state === 'hidden' && !isLoading && !isDisabled;
 
   const icon = CELL_ICONS[state as keyof typeof CELL_ICONS];
@@ -39,6 +35,7 @@ export function GameCell({ row, col, state, isLoading, isDisabled, onClick }: Ga
       type="button"
       className={`${styles.cell} ${styles[state]}`}
       onClick={() => isClickable && onClick(row, col)}
+      onMouseEnter={() => isClickable && onHover?.()}
       disabled={!isClickable}
       variants={shakeVariants}
       animate={state === 'mine-hit' ? 'shake' : 'idle'}

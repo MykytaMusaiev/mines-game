@@ -12,6 +12,7 @@ interface GameGridProps {
   hitCell: { row: number; col: number } | null;
   loadingCell: { row: number; col: number } | null;
   onCellClick: (row: number, col: number) => void;
+  onCellHover?: () => void;
   isRevealing: boolean;
 }
 
@@ -59,6 +60,7 @@ export function GameGrid({
   loadingCell,
   isRevealing,
   onCellClick,
+  onCellHover,
 }: GameGridProps) {
   const cells = useMemo(() => {
     const result: { row: number; col: number }[] = [];
@@ -94,6 +96,7 @@ export function GameGrid({
               state={cellState}
               isLoading={isLoading}
               onClick={onCellClick}
+              onHover={onCellHover}
               isDisabled={isRevealing && !isLoading}
             />
           </motion.div>

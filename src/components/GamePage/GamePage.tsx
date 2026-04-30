@@ -6,22 +6,18 @@ import { useRevealCell } from '../../shared/hooks/useRevealCell';
 import { useCashOut } from '../../shared/hooks/useCashOut';
 import { useCreateGame } from '../../shared/hooks/useCreateGame';
 import { useGameStore } from '../../shared/store/gameStore';
+import { useSound } from '../../shared/hooks/useSound';
 import { HISTORY_QUERY_KEY } from '../../shared/hooks/useHistory';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
 import { GameGrid } from '../GameGrid/GameGrid';
 import { GameResultModal } from '../GameResultModal/GameResultModal';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
+import { MuteButton } from '../MuteButton/MuteButton';
 import { RecentGames } from '../RecentGames/RecentGames';
-import type { RevealedCell, FullBoard, GameStatus } from '../../shared/types';
+import type { RevealedCell, FullBoard, GameStatus, ModalResult } from '../../shared/types';
 import styles from './GamePage.module.css';
 
-interface ModalResult {
-  type: 'win' | 'lose';
-  multiplier?: number;
-  winAmount?: number;
-  profit?: number;
-  lostAmount?: number;
-}
+
 
 export function GamePage() {
   const queryClient = useQueryClient();
@@ -29,6 +25,7 @@ export function GamePage() {
   const revealCell = useRevealCell();
   const cashOut = useCashOut();
   const createGame = useCreateGame();
+  const { play } = useSound();
 
   const [revealedCells, setRevealedCells] = useState<RevealedCell[]>([]);
   const [fullBoard, setFullBoard] = useState<FullBoard | null>(null);
@@ -53,6 +50,7 @@ export function GamePage() {
       { betAmount, minesCount },
       {
         onSuccess: () => {
+          play('start');
           setIsGameStarted(true);
           setGameStatus('active');
           setRevealedCells([]);
@@ -79,11 +77,13 @@ export function GamePage() {
         setLoadingCell(null);
         setGameStatus(data.status);
         if (data.result === 'gem' && data.revealedCells) {
+          play('gem');
           setRevealedCells(data.revealedCells);
           setCurrentMultiplier(data.currentMultiplier ?? 1);
           setNextMultiplier(data.nextMultiplier ?? 1);
         }
         if (data.result === 'mine') {
+          play('mine');
           setHitCell({ row, col });
           setFullBoard(data.fullBoard ?? null);
           setModalResult({ type: 'lose', lostAmount: betAmount });
@@ -101,6 +101,7 @@ export function GamePage() {
   const handleCashOut = () => {
     cashOut.mutate(undefined, {
       onSuccess: (data) => {
+        play('cashout');
         useGameStore.getState().setGameId(null);
         setFullBoard(data.fullBoard);
         setGameStatus('won');
@@ -131,8 +132,13 @@ export function GamePage() {
     queryClient.setQueryData(ACTIVE_GAME_QUERY_KEY, null);
   };
 
+  const handleCellHover = () => {
+    play('hover');
+  };
+
   return (
     <div className={styles.page}>
+      <MuteButton />
       <ControlPanel
         gameStatus={restoredStatus}
         revealedCells={restoredCells}
@@ -151,6 +157,7 @@ export function GamePage() {
           hitCell={hitCell}
           loadingCell={loadingCell}
           onCellClick={handleCellClick}
+          onCellHover={handleCellHover}
           isRevealing={isRevealing}
         />
       </main>
