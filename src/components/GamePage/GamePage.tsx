@@ -17,8 +17,6 @@ import { RecentGames } from '../RecentGames/RecentGames';
 import type { RevealedCell, FullBoard, GameStatus, ModalResult } from '../../shared/types';
 import styles from './GamePage.module.css';
 
-
-
 export function GamePage() {
   const queryClient = useQueryClient();
   const { data: activeGame } = useActiveGame();
@@ -139,30 +137,32 @@ export function GamePage() {
   return (
     <div className={styles.page}>
       <MuteButton />
-      <ControlPanel
-        gameStatus={restoredStatus}
-        revealedCells={restoredCells}
-        currentMultiplier={restoredMultiplier}
-        nextMultiplier={restoredNextMultiplier}
-        isStarting={createGame.isPending}
-        onGameReset={handleGameReset}
-        onGameStart={handleGameStart}
-        onCashOut={handleCashOut}
-      />
-      <main className={styles.main}>
-        <GameGrid
-          status={restoredStatus}
+      <div className={styles.inner}>
+        <ControlPanel
+          gameStatus={restoredStatus}
           revealedCells={restoredCells}
-          fullBoard={fullBoard}
-          hitCell={hitCell}
-          loadingCell={loadingCell}
-          onCellClick={handleCellClick}
-          onCellHover={handleCellHover}
-          isRevealing={isRevealing}
+          currentMultiplier={restoredMultiplier}
+          nextMultiplier={restoredNextMultiplier}
+          isStarting={createGame.isPending}
+          onGameReset={handleGameReset}
+          onGameStart={handleGameStart}
+          onCashOut={handleCashOut}
         />
-      </main>
-      <div className={styles.recentGames}>
-        <RecentGames />
+        <main className={styles.main}>
+          <GameGrid
+            status={restoredStatus}
+            revealedCells={restoredCells}
+            fullBoard={fullBoard}
+            hitCell={hitCell}
+            loadingCell={loadingCell}
+            onCellClick={handleCellClick}
+            onCellHover={handleCellHover}
+            isRevealing={isRevealing}
+          />
+        </main>
+        <div className={styles.recentGames}>
+          <RecentGames />
+        </div>
       </div>
 
       <AnimatePresence>

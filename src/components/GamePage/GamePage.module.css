@@ -1,13 +1,18 @@
 .page {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px;
+}
+
+.inner {
+    display: flex;
     flex-direction: row;
     gap: 24px;
-    padding: 24px;
-    min-height: 100vh;
     align-items: flex-start;
-    max-width: 1440px;
-    margin: 0 auto;
     width: 100%;
+    max-width: 900px;
 }
 
 .main {
@@ -15,7 +20,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 48px);
 }
 
 .recentGames {
@@ -24,12 +28,26 @@
     background: var(--color-panel-bg);
     border-radius: 12px;
     padding: 16px;
-    position: sticky;
-    top: 24px;
-    max-height: calc(100vh - 48px);
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+    /* grid = max-width 480px + aspect-ratio 1:1 = 480px висоти */
+    max-height: 480px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+}
+
+.recentGames::-webkit-scrollbar {
+    width: 4px;
+}
+
+.recentGames::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.recentGames::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 2px;
 }
 
 .loadingScreen {
@@ -56,10 +74,16 @@
 
 @media (max-width: 768px) {
     .page {
-        flex-direction: column;
+        align-items: flex-start;
         padding: 16px;
-        gap: 12px;
         padding-bottom: calc(48px + 16px + env(safe-area-inset-bottom));
+    }
+
+    .inner {
+        flex-direction: column;
+        gap: 12px;
+        max-width: 100%;
+        align-items: stretch;
     }
 
     .main {
@@ -71,7 +95,6 @@
     .recentGames {
         width: 100%;
         min-width: unset;
-        position: static;
         max-height: none;
         overflow: visible;
         background: transparent;
