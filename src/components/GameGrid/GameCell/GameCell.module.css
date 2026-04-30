@@ -13,32 +13,32 @@
     overflow: hidden;
 }
 
-/* Inactive — гра не почата */
+/* Inactive — game not started */
 .inactive {
     background: var(--color-cell-bg);
     opacity: 0.6;
     cursor: not-allowed;
 }
 
-/* Hidden — гра активна, клітинка не відкрита */
+/* Hidden — game active, cell closed */
 .hidden {
     background: var(--color-cell-bg);
     cursor: pointer;
 }
 
-/* Gem — відкрита успішно */
+/* Gem — opened successfull */
 .gem {
     background: #1a3a2a;
     cursor: default;
 }
 
-/* Mine — показ після завершення гри */
+/* Mine — after game finish */
 .mine {
     background: #2a1a1a;
     cursor: default;
 }
 
-/* Mine-hit — та що вбила */
+/* Mine-hit — killing blow */
 .mine-hit {
     background: #3d1515;
     cursor: default;
