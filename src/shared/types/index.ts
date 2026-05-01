@@ -130,3 +130,14 @@ export interface HistoryGame {
 export interface HistoryResponse {
     games: HistoryGame[];
 }
+
+export interface ControlPanelProps {
+    gameStatus: GameStatus | null;
+    revealedCells: RevealedCell[];
+    currentMultiplier: number;
+    nextMultiplier: number;
+    isStarting: boolean;
+    isCashOutPending: boolean;
+    onGameStart: () => void;
+    onCashOut: () => void;
+}

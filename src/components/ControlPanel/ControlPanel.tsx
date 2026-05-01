@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../shared/store/gameStore';
 import { useBalance } from '../../shared/hooks/useBalance';
-import { useCashOut } from '../../shared/hooks/useCashOut';
 import { BetControls } from './BetControls/BetControls';
 import { MinesSelector } from './MinesSelector/MinesSelector';
 import type { MinesCount, GameStatus, RevealedCell } from '../../shared/types';
@@ -13,7 +12,7 @@ interface ControlPanelProps {
   currentMultiplier: number;
   nextMultiplier: number;
   isStarting: boolean;
-  onGameReset: () => void;
+  isCashOutPending: boolean;
   onGameStart: () => void;
   onCashOut: () => void;
 }
@@ -24,16 +23,16 @@ export function ControlPanel({
   currentMultiplier,
   nextMultiplier,
   isStarting,
+  isCashOutPending,
   onGameStart,
   onCashOut,
 }: ControlPanelProps) {
   const { betAmount, minesCount, setBetAmount, setMinesCount } = useGameStore();
   const { data: balanceData } = useBalance();
-  const cashOut = useCashOut();
 
   const balance = balanceData?.balance ?? 0;
   const isActive = gameStatus === 'active';
-  const isLoading = isStarting || cashOut.isPending;
+  const isLoading = isStarting || isCashOutPending;
 
   const gemsFound = revealedCells.filter((c) => c.type === 'gem').length;
   const isCashOutDisabled = isLoading || gemsFound === 0;
