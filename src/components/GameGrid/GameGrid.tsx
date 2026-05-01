@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { GameCell } from './GameCell/GameCell';
+import { GameCellWrapper } from './GameCell/GameCellWrapper';
 import { GRID_SIZE } from '../../shared/constants/game';
 import type { CellState, RevealedCell, FullBoard, GameStatus } from '../../shared/types';
 import styles from './GameGrid.module.css';
@@ -22,7 +22,7 @@ function getCellState(
   status: GameStatus | null,
   revealedCells: RevealedCell[],
   fullBoard: FullBoard | null,
-  hitCell: { row: number; col: number } | null
+  hitCell: { row: number; col: number } | null,
 ): CellState {
   if (!status) return 'inactive';
 
@@ -47,11 +47,6 @@ const gridVariants = {
   },
 };
 
-const cellWrapperVariants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
-};
-
 export function GameGrid({
   status,
   revealedCells,
@@ -73,12 +68,14 @@ export function GameGrid({
   }, []);
 
   const isEnded = status === 'lost' || status === 'won';
+  const hasFullBoard = fullBoard !== null;
 
   return (
     <motion.div
-      className={styles.grid}
+      className={`${styles.grid} ${isRevealing ? styles.gridRevealing : ''}`}
+      style={{ pointerEvents: isRevealing ? 'none' : 'auto' }}
       variants={gridVariants}
-      animate={isEnded && fullBoard ? 'visible' : 'hidden'}
+      animate={isEnded && hasFullBoard ? 'visible' : 'hidden'}
       initial="hidden"
     >
       {cells.map(({ row, col }) => {
@@ -86,20 +83,17 @@ export function GameGrid({
         const isLoading = !!loadingCell && loadingCell.row === row && loadingCell.col === col;
 
         return (
-          <motion.div
+          <GameCellWrapper
             key={`${row}-${col}`}
-            variants={isEnded && fullBoard ? cellWrapperVariants : undefined}
-          >
-            <GameCell
-              row={row}
-              col={col}
-              state={cellState}
-              isLoading={isLoading}
-              onClick={onCellClick}
-              onHover={onCellHover}
-              isDisabled={isRevealing && !isLoading}
-            />
-          </motion.div>
+            row={row}
+            col={col}
+            cellState={cellState}
+            isLoading={isLoading}
+            isEnded={isEnded}
+            hasFullBoard={hasFullBoard}
+            onClick={onCellClick}
+            onHover={onCellHover}
+          />
         );
       })}
     </motion.div>

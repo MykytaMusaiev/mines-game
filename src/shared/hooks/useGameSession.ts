@@ -180,11 +180,16 @@ export interface GameSessionState {
 export function useGameSession(): GameSessionState {
     const queryClient = useQueryClient();
     const { data: activeGame } = useActiveGame();
-    const revealCell = useRevealCell();
-    const cashOut = useCashOut();
-    const createGame = useCreateGame();
     const { play } = useSound();
     const { betAmount, minesCount } = useGameStore();
+
+    // Destructure stable .mutate refs and isPending separately.
+    // TanStack Query v5 guarantees .mutate is a stable reference between renders.
+    // Storing the whole mutation object in useCallback deps causes new object
+    // references on every render, which invalidates memo on child components.
+    const { mutate: revealCellMutate } = useRevealCell();
+    const { mutate: cashOutMutate, isPending: isCashOutPending } = useCashOut();
+    const { mutate: createGameMutate, isPending: isStarting } = useCreateGame();
 
     // UI state — local, not persisted, not needed outside this hook's tree.
     // Initialized once from activeGame via lazy initializer (no useEffect needed).
@@ -198,7 +203,7 @@ export function useGameSession(): GameSessionState {
     );
 
     const handleGameStart = useCallback(() => {
-        createGame.mutate(
+        createGameMutate(
             { betAmount, minesCount },
             {
                 onSuccess: () => {
@@ -207,15 +212,15 @@ export function useGameSession(): GameSessionState {
                 },
             },
         );
-    }, [betAmount, minesCount, createGame, play]);
+    }, [betAmount, minesCount, createGameMutate, play]);
 
     const handleCellClick = useCallback(
         (row: number, col: number) => {
-            if (state.isRevealing) return;
-
+            // No isRevealing guard here — Grid blocks pointer-events during reveal,
+            // so this handler is never called while a reveal is in progress.
             dispatch({ type: "CELL_LOADING", payload: { row, col } });
 
-            revealCell.mutate(
+            revealCellMutate(
                 { row, col },
                 {
                     onSuccess: (data) => {
@@ -256,11 +261,11 @@ export function useGameSession(): GameSessionState {
                 },
             );
         },
-        [state.isRevealing, betAmount, revealCell, play, queryClient],
+        [betAmount, revealCellMutate, play, queryClient],
     );
 
     const handleCashOut = useCallback(() => {
-        cashOut.mutate(undefined, {
+        cashOutMutate(undefined, {
             onSuccess: (data) => {
                 play("cashout");
                 useGameStore.getState().setGameId(null);
@@ -276,7 +281,7 @@ export function useGameSession(): GameSessionState {
                 queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
             },
         });
-    }, [cashOut, play, queryClient]);
+    }, [cashOutMutate, play, queryClient]);
 
     const handleGameReset = useCallback(() => {
         useGameStore.getState().setGameId(null);
@@ -290,8 +295,8 @@ export function useGameSession(): GameSessionState {
 
     return {
         ...state,
-        isStarting: createGame.isPending,
-        isCashOutPending: cashOut.isPending,
+        isStarting,
+        isCashOutPending,
         handleGameStart,
         handleCellClick,
         handleCashOut,

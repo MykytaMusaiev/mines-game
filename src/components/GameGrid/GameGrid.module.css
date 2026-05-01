@@ -7,6 +7,10 @@
     aspect-ratio: 1;
 }
 
+.gridRevealing {
+    cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
     .grid {
         max-width: 100%;
