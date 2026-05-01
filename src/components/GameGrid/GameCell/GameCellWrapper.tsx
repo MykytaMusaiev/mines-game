@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react';
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { GameCell } from './GameCell';
 import type { CellState } from '../../../shared/types';
@@ -29,22 +29,6 @@ export const GameCellWrapper = memo(function GameCellWrapper({
   onClick,
   onHover,
 }: GameCellWrapperProps) {
-  console.log(`render ${row}-${col}`);
-
-  const prev = useRef({ cellState, isLoading, isEnded, hasFullBoard, onClick, onHover });
-
-  if (row === 0 && col === 0) {
-    const p = prev.current;
-    console.log('0-0 changed props:', {
-      cellState: p.cellState !== cellState ? `${p.cellState} → ${cellState}` : '—',
-      isLoading: p.isLoading !== isLoading ? `${p.isLoading} → ${isLoading}` : '—',
-      isEnded: p.isEnded !== isEnded ? `${p.isEnded} → ${isEnded}` : '—',
-      hasFullBoard: p.hasFullBoard !== hasFullBoard ? `${p.hasFullBoard} → ${hasFullBoard}` : '—',
-      onClick: p.onClick !== onClick ? 'CHANGED' : '—',
-      onHover: p.onHover !== onHover ? 'CHANGED' : '—',
-    });
-    prev.current = { cellState, isLoading, isEnded, hasFullBoard, onClick, onHover };
-  }
   return (
     <motion.div
       variants={isEnded && hasFullBoard ? cellWrapperVariants : undefined}
