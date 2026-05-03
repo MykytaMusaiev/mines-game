@@ -14,6 +14,7 @@ import type {
     ModalResult,
     ActiveGameResponse,
 } from "../types";
+import { BALANCE_QUERY_KEY } from "./useBalance";
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -277,6 +278,9 @@ export function useGameSession(): GameSessionState {
                         winAmount: data.winAmount,
                         profit: data.profit,
                     },
+                });
+                queryClient.setQueryData(BALANCE_QUERY_KEY, {
+                    balance: data.balance,
                 });
                 queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
             },

@@ -1,15 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { apiClient } from "../api/apiClient";
 import { useGameStore } from "../store/gameStore";
 import type { CashOutResponse } from "../types";
-import { BALANCE_QUERY_KEY } from "./useBalance";
-import { HISTORY_QUERY_KEY } from "./useHistory";
-import { ACTIVE_GAME_QUERY_KEY } from "./useActiveGame";
 
 export function useCashOut() {
-    const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: () => {
             const gameId = useGameStore.getState().gameId;
@@ -18,18 +13,6 @@ export function useCashOut() {
                 `/api/games/${gameId}/cashout`,
             );
         },
-
-        onSuccess: () =>
-            // data
-            {
-                // toast.success(`You won $${data.winAmount.toFixed(2)}! 🎉`);
-                queryClient.invalidateQueries({ queryKey: BALANCE_QUERY_KEY });
-                queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
-                queryClient.invalidateQueries({
-                    queryKey: ACTIVE_GAME_QUERY_KEY,
-                });
-            },
-
         onError: () => {
             toast.error("Failed to cash out. Please try again.");
         },

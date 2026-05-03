@@ -17,7 +17,7 @@ export const QUICK_BET_AMOUNTS = [
 ] as const;
 
 export const CELL_ICONS = {
-    gem: { src: "/images/diamond.png", alt: "gem" },
+    gem: { src: "/images/diamond.svg", alt: "gem" },
     mine: { src: "/images/bomb.png", alt: "mine" },
     "mine-hit": { src: "/images/bomb.png", alt: "mine" },
 } as const;
