@@ -41,7 +41,7 @@ export function ControlPanel({
   const cashOutAmount = isActive ? betAmount * currentMultiplier : 0;
 
   return (
-    <aside className={styles.panel}>
+    <aside className={`${styles.panel} ${isActive ? styles.panelActive : ''}`}>
       <BetControls
         value={betAmount}
         balance={balance}

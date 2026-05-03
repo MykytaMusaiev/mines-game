@@ -1,37 +1,37 @@
 .page {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
-    padding: 24px;
+    padding: 40px 24px;
 }
 
 .inner {
     display: flex;
     flex-direction: row;
-    gap: 24px;
-    align-items: flex-start;
+    gap: 16px;
+    align-items: stretch;
     width: 100%;
-    max-width: 900px;
+    max-width: 1100px;
 }
 
 .main {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding-top: 10%;
 }
 
 .recentGames {
-    width: 200px;
-    min-width: 200px;
+    width: 240px;
+    min-width: 240px;
     background: var(--color-panel-bg);
     border-radius: 12px;
     padding: 16px;
     display: flex;
     flex-direction: column;
-    /* grid = max-width 480px + aspect-ratio 1:1 = 480px висоти */
-    max-height: 480px;
+    max-height: 650px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--color-border) transparent;
@@ -90,6 +90,7 @@
         min-height: unset;
         width: 100%;
         order: 3;
+        padding-top: 0%;
     }
 
     .recentGames {
