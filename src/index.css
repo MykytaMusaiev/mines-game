@@ -1,7 +1,8 @@
 :root {
-    --color-bg: #0f1923;
-    --color-panel-bg: #1a2535;
-    --color-cell-bg: #1e2d40;
+    --color-bg: #111620;
+    --color-panel-bg: #1a1f2e;
+    --color-recent-game-bg: #0a0e17;
+    --color-cell-bg: #252d3f;
     --color-cell-hover: #253448;
     --color-border: #2a3a50;
     --color-text-primary: #ffffff;
