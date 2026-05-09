@@ -5,6 +5,7 @@ import { BetControls } from './BetControls/BetControls';
 import { MinesSelector } from './MinesSelector/MinesSelector';
 import type { MinesCount, GameStatus, RevealedCell } from '../../shared/types';
 import styles from './ControlPanel.module.css';
+import { TOTAL_CELLS } from '../../shared/constants/game';
 
 interface ControlPanelProps {
   gameStatus: GameStatus | null;
@@ -30,23 +31,30 @@ export function ControlPanel({
   const { betAmount, minesCount, setBetAmount, setMinesCount } = useGameStore();
   const { data: balanceData } = useBalance();
 
-  const balance = balanceData?.balance ?? 0;
+  const balance = balanceData?.balance;
+  const isBalanceLoading = balance === undefined;
   const isActive = gameStatus === 'active';
   const isLoading = isStarting || isCashOutPending;
 
-  const gemsFound = revealedCells.filter((c) => c.type === 'gem').length;
+  const gemsFound = revealedCells.filter((cell) => cell.type === 'gem').length;
   const isCashOutDisabled = isLoading || gemsFound === 0;
-  const totalGems = 25 - minesCount;
+  const totalGems = TOTAL_CELLS - minesCount;
   const profit = isActive ? betAmount * currentMultiplier - betAmount : 0;
   const cashOutAmount = isActive ? betAmount * currentMultiplier : 0;
+
+
+  let buttonLabel: string;
+  if (isLoading) buttonLabel = '...';
+  else if (isActive) buttonLabel = `CASH OUT — $${cashOutAmount.toFixed(2)}`;
+  else buttonLabel = 'START GAME';
 
   return (
     <aside className={`${styles.panel} ${isActive ? styles.panelActive : ''}`}>
       <BetControls
         value={betAmount}
-        balance={balance}
+        balance={balance ?? 0}
         onChange={setBetAmount}
-        disabled={isActive || isLoading}
+        disabled={isActive || isLoading || isBalanceLoading}
       />
 
       <MinesSelector
@@ -102,11 +110,7 @@ export function ControlPanel({
         whileHover={{ opacity: 0.9 }}
         whileTap={{ scale: 0.97 }}
       >
-        {isLoading
-          ? '...'
-          : isActive
-            ? `CASH OUT — $${cashOutAmount.toFixed(2)}`
-            : 'START GAME'}
+        {buttonLabel}
       </motion.button>
 
       <div className={styles.balance}>
@@ -118,7 +122,7 @@ export function ControlPanel({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          ${balance.toFixed(2)}
+          {isBalanceLoading ? '—' : `$${balance.toFixed(2)}`}
         </motion.span>
       </div>
     </aside>

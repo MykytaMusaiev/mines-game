@@ -15,7 +15,7 @@ export function BetControls({ value, balance, onChange, disabled }: BetControlsP
     [balance]
   );
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = Number(e.target.value.replace(/\D/g, ''));
     onChange(Math.min(raw, Math.min(BET_MAX, balance)));
   };
@@ -35,7 +35,7 @@ export function BetControls({ value, balance, onChange, disabled }: BetControlsP
           type="text"
           inputMode="numeric"
           value={value}
-          onChange={handleInput}
+          onChange={handleInputChange}
           disabled={disabled}
         />
       </div>

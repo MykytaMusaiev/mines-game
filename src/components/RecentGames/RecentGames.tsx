@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHistory } from '../../shared/hooks/useHistory';
+import { formatAmount } from '../../shared/utils/formatAmount';
 import styles from './RecentGames.module.css';
 
 export function RecentGames() {
@@ -34,10 +35,10 @@ export function RecentGames() {
                 transition={{ duration: 0.2, delay: i * 0.03 }}
               >
                 <div className={styles.rowTop}>
-                  <span className={styles.bet}>${game.betAmount.toFixed(2)}</span>
+                  <span className={styles.bet}>${formatAmount(game.betAmount)}</span>
                   {isWin ? (
                     <span className={styles.multiplierWin}>
-                      {game.multiplier.toFixed(2)}×
+                      {formatAmount(game.multiplier)}×
                     </span>
                   ) : (
                     <span className={styles.bombIcon}>💣</span>
@@ -49,8 +50,8 @@ export function RecentGames() {
                   </span>
                   <span className={isWin ? styles.profitPos : styles.profitNeg}>
                     {isWin
-                      ? `+$${game.profit.toFixed(2)}`
-                      : `-$${game.betAmount.toFixed(2)}`}
+                      ? `+$${formatAmount(game.profit)}`
+                      : `-$${formatAmount(game.betAmount)}`}
                   </span>
                 </div>
               </motion.div>
@@ -72,10 +73,10 @@ export function RecentGames() {
               transition={{ duration: 0.2, delay: i * 0.03 }}
             >
               <div className={styles.cardTop}>
-                <span className={styles.bet}>${game.betAmount.toFixed(2)}</span>
+                <span className={styles.bet}>${formatAmount(game.betAmount)}</span>
                 {isWin ? (
                   <span className={styles.multiplierWin}>
-                    {game.multiplier.toFixed(2)}×
+                    {formatAmount(game.multiplier)}×
                   </span>
                 ) : (
                   <span className={styles.bombIcon}>💣</span>
@@ -87,8 +88,8 @@ export function RecentGames() {
                 </span>
                 <span className={isWin ? styles.profitPos : styles.profitNeg}>
                   {isWin
-                    ? `+$${game.profit.toFixed(2)}`
-                    : `-$${game.betAmount.toFixed(2)}`}
+                    ? `+$${formatAmount(game.profit)}`
+                    : `-$${formatAmount(game.betAmount)}`}
                 </span>
               </div>
             </motion.div>
