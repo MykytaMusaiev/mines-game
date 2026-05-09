@@ -1,73 +1,129 @@
-# React + TypeScript + Vite
+# 💎 Mines Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A dark-themed iGaming Mines game built with React 18, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+![Demo](./public/showcase.gif)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Mines is a provably-fair style grid game where the player selects a bet amount and number of mines, then reveals cells on a 5×5 board. Each revealed gem increases the multiplier. The player can cash out at any time — or hit a mine and lose the bet.
 
-## Expanding the ESLint configuration
+**Features:**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 5×5 interactive game grid with animations
+- Configurable bet amount and mines count (1, 3, 5, 10, 24)
+- Real-time multiplier and profit tracking
+- Cash out at any time
+- Game state restoration after page reload (active game recovery)
+- Win / Bust result modals
+- Recent games history (desktop: vertical list, mobile: horizontal scroll)
+- Sound effects for all game events with mute toggle
+- Fully responsive — mobile-first layout
+- Smooth animations via Framer Motion
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Tool                         | Details                                  |
+| ---------------------------- | ---------------------------------------- |
+| Vite + React 19 + TypeScript | Core stack                               |
+| Zustand v5                   | Global state + persist (gameId, isMuted) |
+| TanStack Query v5            | Server state, caching, mutations         |
+| Framer Motion                | Animations                               |
+| react-hot-toast              | Toast notifications                      |
+| CSS Modules                  | Styling                                  |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm 9+
+
+### Installation
+
+```bash
+git clone https://github.com/MykytaMusaiev/mines-game.git
+cd mines-game
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+App runs at `http://localhost:5173`
+
+### Build
+
+```bash
+npm run build
+```
+
+### Preview production build
+
+```bash
+npm run preview
+```
+
+---
+
+## Project Structure
+
+```
+src/
+├── App.tsx
+├── components/
+│   ├── ControlPanel/       # Bet controls, mines selector, start/cashout button
+│   ├── GameCell/           # Individual grid cell with animations
+│   ├── GameGrid/           # 5×5 game grid
+│   ├── GamePage/           # Main page — owns all game state
+│   ├── GameResultModal/    # Win / Bust result modal
+│   ├── LoadingOverlay/     # App init and starting game loaders
+│   ├── MuteButton/         # Fixed mute/unmute toggle
+│   └── RecentGames/        # Game history sidebar / horizontal scroll
+└── shared/
+    ├── api/                # API client (fetch-based)
+    ├── constants/          # Game constants (grid size, bet limits, etc.)
+    ├── hooks/              # React Query hooks + useSound
+    ├── store/              # Zustand store
+    └── types/              # Shared TypeScript types
+```
+
+---
+
+## API
+
+**Base URL:** `https://mines-be.vercel.app`  
+**Auth:** `X-Player-Id` header
+
+| Method | Endpoint                  | Description               |
+| ------ | ------------------------- | ------------------------- |
+| GET    | `/api/balance`            | Player balance            |
+| GET    | `/api/history`            | Last 20 games             |
+| POST   | `/api/games`              | Create game               |
+| GET    | `/api/games/active`       | Active game (404 if none) |
+| POST   | `/api/games/{id}/reveal`  | Reveal cell               |
+| POST   | `/api/games/{id}/cashout` | Cash out                  |
+
+---
+
+## Sounds
+
+Place MP3 files in `/public/sounds/`:
+
+| File          | Event             |
+| ------------- | ----------------- |
+| `start.mp3`   | Game started      |
+| `gem.mp3`     | Gem revealed      |
+| `mine.mp3`    | Mine hit          |
+| `cashout.mp3` | Cash out          |
+| `hover.mp3`   | Cell hover        |
+| `reveal.mp3`  | Full board reveal |

@@ -1,0 +1,45 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+}
+
+.options {
+    display: flex;
+    gap: 6px;
+}
+
+.option {
+    flex: 1;
+    padding: 8px 4px;
+    border-radius: 8px;
+    border: none;
+    background: var(--color-cell-bg);
+    color: var(--color-text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.option:hover:not(:disabled) {
+    background: var(--color-cell-hover);
+}
+
+.option.active {
+    background: var(--color-accent-blue);
+    color: #ffffff;
+}
+
+.option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

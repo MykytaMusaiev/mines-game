@@ -1,0 +1,187 @@
+.aside {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+.title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+.loadingWrap {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-accent-blue);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.empty {
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    text-align: center;
+    padding: 24px 0;
+}
+
+/* ── Desktop vertical list ── */
+.listDesktop {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+    flex: 1;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+}
+
+.listDesktop::-webkit-scrollbar {
+    width: 4px;
+}
+
+.listDesktop::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.listDesktop::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 2px;
+}
+
+.row {
+    background: var(--color-recent-game-bg);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    cursor: default;
+    transition: background 0.15s;
+}
+
+.row:hover {
+    background: var(--color-cell-hover);
+}
+
+.rowTop,
+.rowBottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ── Mobile horizontal scroll ── */
+.listMobile {
+    display: none;
+}
+
+.card {
+    background: var(--color-recent-game-bg);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 110px;
+    flex-shrink: 0;
+}
+
+.cardTop,
+.cardBottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Shared text styles ── */
+.bet {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.multiplierWin {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-green);
+}
+
+.bombIcon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.statusWin {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.statusBust {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.profitPos {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-green);
+}
+
+.profitNeg {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-red);
+}
+
+/* ── Mobile breakpoint ── */
+@media (max-width: 768px) {
+    .aside {
+        height: auto;
+    }
+
+    .title {
+        margin-bottom: 6px;
+    }
+
+    .listDesktop {
+        display: none;
+    }
+
+    .listMobile {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+    }
+
+    .listMobile::-webkit-scrollbar {
+        display: none;
+    }
+}

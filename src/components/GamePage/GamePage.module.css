@@ -1,0 +1,106 @@
+.page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 24px;
+}
+
+.inner {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: stretch;
+    width: 100%;
+    max-width: 1100px;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 10%;
+}
+
+.recentGames {
+    width: 240px;
+    min-width: 240px;
+    background: var(--color-panel-bg);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    max-height: 650px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+}
+
+.recentGames::-webkit-scrollbar {
+    width: 4px;
+}
+
+.recentGames::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.recentGames::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 2px;
+}
+
+.loadingScreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-text-primary);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .page {
+        align-items: flex-start;
+        padding: 16px;
+        padding-bottom: calc(48px + 16px + env(safe-area-inset-bottom));
+    }
+
+    .inner {
+        flex-direction: column;
+        gap: 12px;
+        max-width: 100%;
+        align-items: stretch;
+    }
+
+    .main {
+        min-height: unset;
+        width: 100%;
+        order: 3;
+        padding-top: 0%;
+    }
+
+    .recentGames {
+        width: 100%;
+        min-width: unset;
+        max-height: none;
+        overflow: visible;
+        background: transparent;
+        padding: 0;
+        border-radius: 0;
+        order: 1;
+    }
+}
